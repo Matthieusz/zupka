@@ -1,0 +1,29 @@
+packages:
+  - apps/*
+  - packages/*
+
+minimumReleaseAgeExclude:
+  - "@effect/platform-node@4.0.6"
+  - "@voidzero-dev/vite-plus-core@1.4.0"
+  - "@voidzero-dev/vite-plus-darwin-arm64@1.4.0"
+  - "@voidzero-dev/vite-plus-darwin-x64@1.4.0"
+  - "@voidzero-dev/vite-plus-linux-arm64-gnu@1.4.0"
+  - "@voidzero-dev/vite-plus-linux-arm64-musl@1.4.0"
+  - "@voidzero-dev/vite-plus-linux-x64-gnu@1.4.0"
+  - "@voidzero-dev/vite-plus-linux-x64-musl@1.4.0"
+  - "@voidzero-dev/vite-plus-win32-arm64-msvc@1.4.0"
+  - "@voidzero-dev/vite-plus-win32-x64-msvc@1.4.0"
+  - effect@4.0.6
+  - vite-plus@1.4.0
+
+allowBuilds:
+  esbuild: true
+
+overrides:
+  "vite@*": "npm:@voidzero-dev/vite-plus-core@1.4.0"
+  "vitest@*": "5.0.5"
+
+# Vite+ uses its own version number for the Vite 8-compatible core alias.
+peerDependencyRules:
+  allowedVersions:
+    vite: "1.4.0"

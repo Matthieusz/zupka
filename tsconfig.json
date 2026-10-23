@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["vite.config.ts", "apps/api/**/*.ts", "packages/*/src/**/*.ts"],
+  "exclude": ["**/dist", "node_modules", "tools"]
+}
