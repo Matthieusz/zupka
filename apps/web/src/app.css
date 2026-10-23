@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply m-0 bg-zinc-950 font-sans text-zinc-100 antialiased;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+}
