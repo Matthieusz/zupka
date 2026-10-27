@@ -22,7 +22,7 @@ it("does not turn defects into successful results", async () => {
 });
 
 it("cancelling a TanStack query interrupts Effect and aborts its HTTP transport", async () => {
-  const started = Effect.runSync(Deferred.make<AbortSignal>());
+  const started = Deferred.makeUnsafe<AbortSignal>();
 
   const fetch: typeof globalThis.fetch = (_input, init) => {
     const signal = init?.signal;

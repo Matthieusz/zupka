@@ -18,7 +18,7 @@ afterAll(() => vi.unstubAllGlobals());
 
 it("loads health, then invalidates and refetches after a manual check", async () => {
   let requests = 0;
-  const firstResponse = Effect.runSync(Deferred.make<Response>());
+  const firstResponse = Deferred.makeUnsafe<Response>();
 
   transport = async () => {
     requests += 1;
@@ -57,7 +57,7 @@ it("loads health, then invalidates and refetches after a manual check", async ()
 });
 
 it("reactively disables and cancels an empty query, then fetches when enabled", async () => {
-  const response = Effect.runSync(Deferred.make<Response>());
+  const response = Deferred.makeUnsafe<Response>();
   let requests = 0;
 
   transport = () => {

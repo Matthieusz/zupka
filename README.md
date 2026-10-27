@@ -43,7 +43,7 @@ No separate package build step is needed.
 | `pnpm lint`                        | Oxlint with anti-slop and Effect-specific rules         |
 | `pnpm format`                      | Oxfmt, including Svelte files                           |
 | `pnpm format:check`                | Check formatting without changes                        |
-| `pnpm typecheck`                   | TypeScript 7 plus Svelte-specific checks                |
+| `pnpm typecheck`                   | Effect-patched tsrs plus Svelte-specific checks         |
 | `pnpm test`                        | Vitest API and component tests                          |
 | `pnpm build`                       | Build both apps                                         |
 | `pnpm --filter @zupka/api start`   | Run the built API                                       |
@@ -91,8 +91,20 @@ References: [Svelte Query quick start](https://tanstack.com/query/latest/docs/fr
 
 ## TypeScript and Svelte checks
 
-The workspace uses stable TypeScript **7.0.2**, including its native compiler.
-The web app has a local TypeScript **6.0.3** dependency because
+The workspace uses [`tsrs`](https://github.com/oxc-project/tsrs)
+**0.20.0-ts7.1.0-beta** through [`@effect/tsgo`](https://github.com/Effect-TS/tsgo)
+**0.59.0**. `pnpm typecheck` runs `effect-tsgo tsrs`, which supplies the
+Effect-patched compiler without rewriting `node_modules`. The shared tsconfig
+enables Effect diagnostics alongside TypeScript's strict checks, explicitly
+allowing the existing unstable HTTP and Node platform modules. Both root and web
+TypeScript projects use this compiler; Svelte components are checked separately.
+
+For editor LSP integration, launch `pnpm exec effect-tsgo tsrs --lsp --stdio`
+for TypeScript files instead of a second TypeScript language server. Keep the
+Svelte language server for components. Effect's bundled tsrs currently does not
+support Linux musl.
+
+The web app retains a local TypeScript **6.0.3** dependency because
 `svelte-check@4.7.7` supports TypeScript 5/6 and requires the legacy compiler API.
 `svelte-check` checks component types and Svelte accessibility/compiler diagnostics.
 Oxlint does not lint Svelte templates; these checks complement it.

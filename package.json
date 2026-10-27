@@ -8,15 +8,16 @@
     "lint": "vp lint",
     "format": "vp fmt",
     "format:check": "vp fmt --check",
-    "typecheck": "tsc --noEmit -p tsconfig.json && pnpm --filter @zupka/web typecheck",
+    "typecheck": "effect-tsgo tsrs --noEmit -p tsconfig.json && pnpm --filter @zupka/web typecheck",
     "test": "vp test run",
     "check": "vp check && pnpm typecheck && pnpm test"
   },
   "devDependencies": {
+    "@effect/tsgo": "0.59.0",
     "@oxlint/plugins": "1.89.0",
     "@types/node": "26.6.5",
     "oxlint": "1.89.0",
-    "typescript": "7.0.2",
+    "tsrs": "0.20.0-ts7.1.0-beta",
     "vite-plus": "1.4.0"
   },
   "engines": {
