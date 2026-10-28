@@ -1,128 +1,188 @@
 # Zupka
 
-Minimal pnpm workspace: Svelte 5 + Bits UI + Tailwind CSS, backed by Effect 4.
-Vite+ owns dev tooling, builds, Vitest, Oxlint, and Oxfmt.
+A self-hosted, single-owner headless CMS for independently built portfolio sites.
+Configure content types in TypeScript, author in the private Svelte admin, and
+explicitly publish through a read-only JSON API. Portfolio presentation, Markdown
+rendering and consumer-site rebuilds stay outside the CMS.
 
-## Start
+## What v1 includes
 
-Use Node.js 26.x.
+- Posts and Projects, plus code-defined custom types and fields.
+- Generated editors for text, number, boolean, date/time, URL, Markdown, image,
+  fixed-choice select and text lists.
+- Independent saved drafts and published versions; explicit Save draft, Publish,
+  Unpublish and permanent Delete actions. No autosave or revision history.
+- Safe Markdown preview and verified JPEG/PNG/WebP/GIF uploads up to 10 MiB.
+  Images are private until referenced by a current publication; saved references
+  protect them from deletion.
+- One local owner, password authentication and revocable cookie sessions.
+  Provisioning and recovery are terminal-only; there is no public signup/reset.
+- One locally built, non-root container serving admin/API on the same origin,
+  with SQLite and images on persistent disk behind your HTTPS reverse proxy.
+
+See the approved [specification](docs/SPEC.md), [glossary](GLOSSARY.md),
+[implementation/verification record](docs/IMPLEMENTATION_PLAN.md), and
+[roadmap](docs/ROADMAP.md). Multi-user accounts, relationships, visual schema
+editing, scheduling, image transformations and cloud storage are not v1 features.
+
+## Deploy your configured checkout
+
+1. Clone this repository and edit `apps/api/src/content-config.ts`.
+2. Build locally with `docker build -t zupka:local .`.
+3. Create a persistent volume and provision the owner with the compiled CLI.
+4. Run one container with an explicit HTTPS `AUTH_ORIGIN`; forward the whole
+   origin from your HTTPS proxy to the container.
+5. Retain the volume and matching configured source across upgrades.
+
+Follow the complete [deployment guide](docs/DEPLOYMENT.md) for exact build/run,
+non-root permissions, proxy, owner creation/recovery, migrations, upgrades and
+maintenance-window backup/restore commands. Do not expose the upload directory or
+cache private API/image responses. Do not copy just a live SQLite file.
+
+## Local development
+
+Use Node 26.x and pnpm 12.14.0 (the `packageManager` field pins pnpm).
 
 ```sh
-pnpm install
+pnpm install --frozen-lockfile
+pnpm --filter @zupka/api owner:create
 pnpm dev
 ```
 
-Open http://127.0.0.1:5173. The API listens on http://127.0.0.1:3001.
-Vite proxies `/api` to the backend. The page fetches the health endpoint through
-the shared, schema-decoding HttpApi client and includes an accessible Bits UI dialog.
+Open **http://127.0.0.1:5173**. Vite proxies `/api` to the Effect server at
+`127.0.0.1:3001`. Use that exact origin, not `localhost`, unless you also set
+`AUTH_ORIGIN`. Both processes must use the same storage as the operator commands.
 
-## Layout
+### Verify owner login locally
 
-```text
-apps/
-  web/          Svelte SPA, Tailwind, Bits UI
-  api/          Effect HTTP implementation and Node runtime
-packages/
-  contracts/    Effect Schema + HttpApi; shared server/client contract
-  shared/       Reserved for shared domain utilities; intentionally empty
-tools/
-  oxlint/
-    anti-slop/  Vendored Dillon Mulroy anti-slop rules, licenses, provenance
+`owner:create` prompts for your email, hidden password (12–1024 characters), and
+confirmation. Sign in, reload, restart the API, and sign out. Sessions persist
+across restart; logout revokes the current session. To recover a forgotten password:
+
+```sh
+pnpm --filter @zupka/api owner:recover
 ```
 
-Workspace packages expose TypeScript source directly. Vite bundles it for the
-browser, and Vite+ pack bundles the API's contract into its production entry.
-No separate package build step is needed.
+Use the existing email and a new hidden password. Recovery invalidates the old
+password and all sessions. Never pass passwords through arguments/environment
+variables or delete the database to recover access.
 
-## Commands
+Source package commands default to `apps/api/zupka.sqlite` and
+`apps/api/uploads`. For another location, set the **same absolute** `DATABASE_PATH`
+and `UPLOADS_PATH` for the API and every CLI; create the database's parent directory
+first. Keep storage and journal files private and outside public/static directories.
+Production requires an explicit HTTPS `AUTH_ORIGIN`, with Secure, HttpOnly,
+host-only, SameSite=Strict cookies. HTTP cookies are loopback-development only.
+See [authentication/security](docs/AUTHENTICATION.md) for CSRF, expiry and limits.
 
-| Command                            | Purpose                                                 |
-| ---------------------------------- | ------------------------------------------------------- |
-| `pnpm dev`                         | Start both apps using the Vite+ task runner             |
-| `pnpm check`                       | Formatting, type-aware lint, type checks, and all tests |
-| `pnpm lint`                        | Oxlint with anti-slop and Effect-specific rules         |
-| `pnpm format`                      | Oxfmt, including Svelte files                           |
-| `pnpm format:check`                | Check formatting without changes                        |
-| `pnpm typecheck`                   | Effect-patched tsrs plus Svelte-specific checks         |
-| `pnpm test`                        | Vitest API and component tests                          |
-| `pnpm build`                       | Build both apps                                         |
-| `pnpm --filter @zupka/api start`   | Run the built API                                       |
-| `pnpm --filter @zupka/web preview` | Preview the built frontend                              |
+## Author and publish
 
-Root `vite.config.ts` owns lint, formatting, and test projects. Each app has its
-own Vite+ build configuration. API tests exercise the actual HTTP router;
-frontend tests cover the real Bits UI dialog and the Query/Effect integration.
+1. Choose Posts, Projects or another configured type, then **New entry**.
+2. Enter a title; the editor suggests an editable slug. Include optional fields
+   as needed, upload/select images, and preview Markdown.
+3. **Save draft** validates and persists the working version. It does not change
+   any existing public version. Resolve field errors before retrying.
+4. **Publish** validates the saved version and makes it public. Slugs lock after
+   first publication, even after unpublishing. Unsaved changes cannot be published.
+5. **Unpublish** removes availability but retains the draft. Unpublish before
+   deleting an entry; remove all saved references before deleting an image.
 
-## Server state: TanStack Query + Effect
+Stale saves conflict rather than overwrite. Load the latest saved version to
+compare, then explicitly discard or keep local work; there is no automatic merge.
+Session loss retains an open editor's input **in memory in that tab**, not durable
+browser storage. Closing/reloading the tab is not an unsaved-content recovery path.
 
-`apps/web/src/Root.svelte` creates one QueryClient and provides it to the app.
-Queries stay fresh for 30 seconds, retry once, refetch stale data on mount and
-reconnection, and do not refetch on window focus. Mutations do not retry.
-The root clears the cache on destruction.
+See [admin navigation/lists](docs/ADMIN_WORKSPACE.md),
+[editing/images](docs/CONTENT_EDITING.md), [draft API](docs/DRAFT_MANAGEMENT.md),
+[publication rules](docs/PUBLISHING.md) and [image operations](docs/IMAGES.md).
 
-`apps/web/src/lib/effect.ts` bridges Effect programs to Promises using the
-existing default Effect runtime; it does not create a ManagedRuntime per request.
-It forwards Query's AbortSignal to `Effect.runPromise`, rejects already-aborted
-requests before execution, and unwraps expected failures so Query receives the
-original typed error rather than a FiberFailure wrapper. Defects and interruption
-remain runtime failures. Promise types cannot encode rejection types, so the
-query/mutation error type is derived from `Effect.Error<ReturnType<typeof loadHealth>>`.
+## Configure content
 
-`App.svelte` uses Svelte 5 accessor options (`createQuery(() => ({ ... }))`),
-not stores or `$effect` fetching. Query owns data, loading, errors, retries and
-invalidation; a local rune owns whether the query is enabled. Disabling it also
-cancels the active request. The health endpoint has no parameters, so its key
-is deliberately stable: `["health"]`. When adding parameterized endpoints,
-include every request parameter in the key inside the reactive options callback.
+[Configuration examples](docs/CONTENT_CONFIGURATION.md) explain the typed Posts,
+Projects and opt-in Talks definitions. Defaults apply only at creation. Optional
+additions can be adopted at startup without rewriting saved content; incompatible
+edits are rejected until an explicit operator-authored conversion runs.
 
-The manual-check `createMutation` calls the existing **read-only** health endpoint
-and awaits health-query invalidation on success. This demonstrates imperative
-execution and invalidation, not a server write. Ordinary refresh buttons should
-normally use `query.refetch()`; replace the demo operation with a real write when
-one exists. TanStack mutations do not supply an automatic AbortSignal, unlike
-queries. The helper accepts an optional caller-owned signal if needed.
+Configuration edits require a rebuild/redeploy. Back up the old data/configuration
+pair before changing it. See [storage and explicit migrations](docs/CONTENT_STORAGE.md)
+and the [upgrade/rollback procedure](docs/DEPLOYMENT.md#recovery-configuration-changes-and-upgrades).
+The default migration registry is intentionally empty.
 
-Tests cover cancellation down to the HTTP transport, pre-aborted signals, typed
-failures, reactive enabled options, cache-key reuse, empty/error/loading states,
-and refetching after mutation success.
+## Consume published content
 
-References: [Svelte Query quick start](https://tanstack.com/query/latest/docs/framework/svelte/quick-start),
-[query cancellation](https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation).
+```sh
+curl 'https://cms.example.com/api/content/posts?limit=20&offset=0'
+curl 'https://cms.example.com/api/content/projects/my-project'
+```
 
-## TypeScript and Svelte checks
+No API key is needed. Responses contain only published fields, Markdown source,
+and root-relative image URLs with per-use alt text. Resolve image URLs against the
+CMS origin; render Markdown safely in the consuming site. `PUBLIC_READ_ORIGINS`
+configures credential-free public CORS separately from owner admission.
 
-The workspace uses [`tsrs`](https://github.com/oxc-project/tsrs)
-**0.20.0-ts7.1.0-beta** through [`@effect/tsgo`](https://github.com/Effect-TS/tsgo)
-**0.59.0**. `pnpm typecheck` runs `effect-tsgo tsrs`, which supplies the
-Effect-patched compiler without rewriting `node_modules`. The shared tsconfig
-enables Effect diagnostics alongside TypeScript's strict checks, explicitly
-allowing the existing unstable HTTP and Node platform modules. Both root and web
-TypeScript projects use this compiler; Svelte components are checked separately.
+See [public API shapes, ordering, pagination, CORS and caching](docs/PUBLIC_CONTENT_API.md).
+Unknown/unpublished entries are unavailable. Unpublishing cannot recall previously
+downloaded images or content independently cached by a portfolio.
+`GET /api/health` returns `{"status":"ok"}`.
 
-For editor LSP integration, launch `pnpm exec effect-tsgo tsrs --lsp --stdio`
-for TypeScript files instead of a second TypeScript language server. Keep the
-Svelte language server for components. Effect's bundled tsrs currently does not
-support Linux musl.
+## Verify a checkout
 
-The web app retains a local TypeScript **6.0.3** dependency because
-`svelte-check@4.7.7` supports TypeScript 5/6 and requires the legacy compiler API.
-`svelte-check` checks component types and Svelte accessibility/compiler diagnostics.
-Oxlint does not lint Svelte templates; these checks complement it.
+```sh
+pnpm check
+pnpm build
+# One-time browser installation after installing workspace dependencies:
+pnpm exec playwright install chromium
+pnpm verify:v1
+```
 
-## API and configuration
+`pnpm check` covers formatting, type-aware lint, strict Effect/TypeScript and
+Svelte checks, and real-router/SQLite/filesystem/schema/component tests. The
+browser files are also typechecked. `pnpm build` builds the admin plus server and
+operator CLIs, copying public assets into `apps/api/dist/public`.
 
-`GET /api/health` returns `{"status":"ok"}`. Add endpoints and response schemas
-in `packages/contracts/src/index.ts`, then implement their handlers in
-`apps/api/src/app.ts`. The frontend uses the same contract via `HttpApiClient`.
+`pnpm verify:v1` additionally requires Linux Docker, Python 3.12+, OpenSSL and
+Playwright Chromium. It builds disposable configured containers and a local TLS
+proxy, exercises the real browser owner workflow, then checks restart/rebuild,
+backup/fresh-volume restore, password recovery, incompatible configuration and a
+successful packaged migration. It never targets an existing CMS volume. Screenshots
+are local ignored artifacts in `test-results/browser/`; no request traces are saved.
+For the lighter HTTP-only packaging check, run `python3 tools/verify-deployment.py`.
 
-The backend reads `HOST` (default `127.0.0.1`) and `PORT` (default `3001`)
-using Effect Config. If you change the API port during development, update
-the proxy target in `apps/web/vite.config.ts`.
+See [v1 verification evidence and limitations](docs/VERIFICATION.md). An existing
+intermittent authenticated-401 failure was reproduced in the entry-router suite;
+its root cause remains unresolved and blocks unconditional release acceptance.
+Passing browser runs or test reruns are not a fix. Chromium on
+Linux and a test-certificate HTTPS proxy have been exercised; other engines,
+physical devices, public certificate provisioning and your actual proxy/firewall
+remain operator acceptance checks. Passing these commands is not a universal
+security audit or a guarantee about an untested hosting environment.
 
-Production frontend files are in `apps/web/dist`; the API entry is
-`apps/api/dist/main.mjs`. The API requires its production dependencies.
-Deploy static files with a same-origin reverse proxy forwarding `/api` to
-the API. The API does not serve the frontend, and Vite's dev proxy is not
-a production deployment server.
+## Workspace and commands
 
-No database, authentication, or deployment infrastructure is included.
+| Location             | Responsibility                                                                         |
+| -------------------- | -------------------------------------------------------------------------------------- |
+| `apps/api`           | Effect HTTP services, SQLite/filesystem adapters, typed configuration and operator CLI |
+| `apps/web`           | Svelte 5 admin, Bits UI, Tailwind, TanStack Query and HTTPS browser smoke tests        |
+| `packages/shared`    | Browser-safe domain schemas and content rules                                          |
+| `packages/contracts` | Shared Effect Schema/HttpApi contracts and DTOs                                        |
+| `tools`              | Build/deployment verification and vendored anti-slop lint rules                        |
+
+| Command                                                   | Purpose                                                                |
+| --------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `pnpm dev`                                                | Start both development apps                                            |
+| `pnpm check`                                              | Formatting, lint, type checks and Vitest suites                        |
+| `pnpm test`                                               | Vitest suites only (no Docker/browser fixture)                         |
+| `pnpm verify:v1`                                          | Disposable HTTPS browser/container/operator acceptance workflow        |
+| `pnpm build`                                              | Build admin, server and compiled CLI entries                           |
+| `pnpm --filter @zupka/api start`                          | Run the compiled service; use production env from the deployment guide |
+| `pnpm --filter @zupka/api owner:create` / `owner:recover` | Interactive source-checkout owner operations                           |
+| `pnpm --filter @zupka/api content:migrate <version>`      | Explicit configured source data conversion                             |
+| `pnpm lint` / `pnpm typecheck`                            | Run individual engineering checks                                      |
+| `pnpm format` / `pnpm format:check`                       | Format or check formatting                                             |
+
+Vite+ owns build/test/lint/format tooling. Shared TypeScript source is bundled for
+browser/server entries; runtime dependencies and generated chunks must accompany
+the compiled API. Effect-aware `tsrs` checks TypeScript; `svelte-check` additionally
+checks Svelte components. Query owns admin reads/cancellation and cache identity;
+mutations do not automatically retry, and protected caches clear on logout/session
+loss. See the implementation and tests before changing these boundaries.
