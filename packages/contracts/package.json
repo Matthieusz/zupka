@@ -6,6 +6,8 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@yielded/auth": "0.1.0-beta.46",
+    "@zupka/shared": "workspace:*",
     "effect": "4.0.6"
   }
 }

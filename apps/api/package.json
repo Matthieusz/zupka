@@ -1,16 +1,28 @@
 {
   "name": "@zupka/api",
   "private": true,
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/main.ts",
-    "build": "vp pack",
+    "owner:create": "tsx src/owner.ts create",
+    "owner:recover": "tsx src/owner.ts recover",
+    "content:migrate": "tsx src/migrate-content.ts",
+    "build": "vp pack && node --input-type=module -e \"import { cp } from 'node:fs/promises'; await cp('../web/dist', 'dist/public', { recursive: true });\"",
     "start": "node dist/main.mjs"
   },
   "dependencies": {
     "@effect/platform-node": "4.0.6",
+    "@effect/sql-sqlite-node": "4.0.6",
+    "@yielded/auth": "0.1.0-beta.46",
+    "@yielded/auth-persistence": "0.1.0-beta.46",
+    "@yielded/crypto": "0.1.0-beta.46",
     "@zupka/contracts": "workspace:*",
-    "effect": "4.0.6"
+    "@zupka/shared": "workspace:*",
+    "effect": "4.0.6",
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "tsx": "4.23.15"
