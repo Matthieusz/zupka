@@ -1,83 +1,150 @@
 <script lang="ts">
   import { createMutation, createQuery, useQueryClient } from "@tanstack/svelte-query";
-  import type { Health } from "@zupka/contracts";
-  import type { Effect } from "effect";
-  import ExampleDialog from "./lib/ExampleDialog.svelte";
+  import { tick } from "svelte";
+  import OwnerLogin from "./lib/OwnerLogin.svelte";
+  import EntryEditor from "./lib/EntryEditor.svelte";
+  import type { AdminEntry } from "@zupka/contracts";
+  import type { ContentTypeDefinition } from "@zupka/shared";
+  import Workspace from "./lib/Workspace.svelte";
+  import { loadSession, signOut } from "./lib/auth.js";
   import { runEffect } from "./lib/effect.js";
-  import { loadHealth } from "./lib/health.js";
 
-  type HealthError = Effect.Error<ReturnType<typeof loadHealth>>;
+  const cache = useQueryClient();
 
-  const queryClient = useQueryClient();
+  let expired = $state(false);
 
-  let enabled = $state(true);
+  let editor = $state<{ type: ContentTypeDefinition; entry: typeof AdminEntry.Type | null } | null>(
+    null,
+  );
 
-  // This endpoint has no parameters: one stable key identifies its server data.
-  const health = createQuery<Health, HealthError>(() => ({
-    queryKey: ["health"],
-    queryFn: ({ signal }) => runEffect(loadHealth(), signal),
-    enabled,
+  let hadSession = false;
+
+  async function clearProtected() {
+    await cache.cancelQueries({ queryKey: ["admin"] });
+    cache.removeQueries({ queryKey: ["admin"] });
+  }
+
+  const session = createQuery(() => ({
+    queryKey: ["owner-session"],
+    queryFn: async ({ signal }) => {
+      const value = await runEffect(loadSession(), signal);
+      signal.throwIfAborted();
+
+      if (value === null) {
+        expired = hadSession;
+        await clearProtected();
+      } else {
+        hadSession = true;
+        expired = false;
+      }
+
+      return value;
+    },
+    retry: false,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    // Check idle foreground tabs too; every management read is still authorized by the server.
+    refetchInterval: 60_000,
   }));
 
-  // Manual command against the existing read-only endpoint, not a server write.
-  // Real writes use the same mutation + awaited invalidation pattern.
-  const checkHealth = createMutation<Health, HealthError>(() => ({
-    mutationFn: () => runEffect(loadHealth()),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["health"] }),
+  async function sessionLost() {
+    expired = true;
+    await cache.cancelQueries({ queryKey: ["owner-session"] });
+    cache.setQueryData(["owner-session"], null);
+    await clearProtected();
+  }
+
+  async function signedIn() {
+    await clearProtected();
+    await cache.invalidateQueries({ queryKey: ["owner-session"] });
+  }
+
+  const logout = createMutation(() => ({
+    mutationFn: () => runEffect(signOut()),
+    retry: false,
+    gcTime: 0,
+    onSuccess: async () => {
+      hadSession = false;
+      expired = false;
+      await cache.cancelQueries({ queryKey: ["owner-session"] });
+      cache.setQueryData(["owner-session"], null);
+      await clearProtected();
+    },
   }));
 </script>
 
-<main class="mx-auto flex min-h-svh max-w-2xl flex-col justify-center gap-6 px-6 py-16">
-  <p class="text-sm font-medium tracking-widest text-lime-400 uppercase">Zupka scaffold</p>
-  <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">A small place to start.</h1>
-  <p class="text-lg text-zinc-400">Svelte 5, Bits UI, Tailwind CSS, and an Effect API.</p>
+<a
+  class="skip-link"
+  href="#main-content"
+  onclick={(event) => {
+    event.preventDefault();
+    document.getElementById("main-content")?.focus();
+  }}>Skip to content</a
+>
+{#if session.isPending}
+  <main id="main-content" class="auth-screen" tabindex="-1">
+    <p role="status">Checking your session…</p>
+  </main>
+{:else if session.isError}
+  <main id="main-content" class="auth-screen" tabindex="-1">
+    <section class="session-error">
+      <h1>Unable to check your session</h1>
+      <p role="alert">
+        Check your connection and try again. Protected content is hidden until your session can be
+        verified.
+      </p>
+      <button onclick={() => session.refetch()}>Try again</button>
+    </section>
+  </main>
+{:else if session.data && !expired}
+  {#if !editor}<Workspace
+      onOpen={(type, entry) => {
+        editor = { type, entry };
+      }}
+      onSessionLost={sessionLost}
+      onLogout={() => logout.mutate()}
+      signingOut={logout.isPending}
+      logoutFailed={logout.isError}
+    />{/if}
+  {#if logout.isError && editor}<p role="alert">Sign out failed. Please try again.</p>{/if}
+{:else}
+  <main id="main-content" class="auth-screen" tabindex="-1">
+    <OwnerLogin onSignedIn={signedIn} {expired} />
+  </main>
+{/if}
 
-  <section aria-label="Backend health" class="flex flex-col gap-3">
-    <label class="flex items-center gap-2 text-sm text-zinc-300">
-      <input
-        type="checkbox"
-        checked={enabled}
-        onchange={async (event) => {
-          enabled = event.currentTarget.checked;
+{#if editor}
+  <div hidden={!session.data || expired || session.isError}>
+    <EntryEditor
+      type={editor.type}
+      initial={editor.entry}
+      active={Boolean(session.data) && !expired && !session.isError}
+      onClose={async () => {
+        editor = null;
+        await tick();
+        document.getElementById("content-heading")?.focus();
+      }}
+      onSessionLost={sessionLost}
+      onLogout={() => logout.mutate()}
+    />
+  </div>
+{/if}
 
-          if (!enabled) {
-            await queryClient.cancelQueries({ queryKey: ["health"] });
-          }
-        }}
-        class="accent-lime-400"
-      />
-      Enable health query
-    </label>
-
-    <div role="status" class="text-sm text-zinc-300">
-      {#if health.isLoading}
-        Checking backend…
-      {:else if health.isError}
-        Backend unavailable. Please try again.
-      {:else if health.isSuccess}
-        Backend connected ({health.data.status})
-      {:else}
-        No health data yet.
-      {/if}
-    </div>
-
-    {#if health.isFetching && !health.isLoading}
-      <p class="text-sm text-zinc-400">Refreshing backend status…</p>
-    {/if}
-
-    <button
-      onclick={() => checkHealth.mutate()}
-      disabled={checkHealth.isPending}
-      class="w-fit rounded-lg border border-zinc-600 px-4 py-2 text-sm hover:bg-zinc-800 disabled:cursor-wait disabled:opacity-50"
-    >
-      {checkHealth.isPending ? "Checking…" : "Run manual health check"}
-    </button>
-    {#if checkHealth.isError}
-      <p role="alert" class="text-sm text-red-400">Manual check failed. Please try again.</p>
-    {:else if checkHealth.isSuccess}
-      <p class="text-sm text-lime-400">Manual check succeeded.</p>
-    {/if}
-  </section>
-
-  <ExampleDialog />
-</main>
+<style>
+  .auth-screen {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    min-block-size: 100svh;
+    padding: var(--space-page);
+  }
+  .session-error {
+    display: grid;
+    gap: 1rem;
+    max-inline-size: 34rem;
+  }
+  .session-error button {
+    justify-self: start;
+  }
+</style>
