@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-28T10:12:45.280Z",
+  "title": "Design System: Zupka",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.02 311)",
+          "oklch(25% 0.02 311)",
+          "oklch(35% 0.02 311)",
+          "oklch(45% 0.02 311)",
+          "oklch(55% 0.02 311)",
+          "oklch(65% 0.02 311)",
+          "oklch(80% 0.02 311)",
+          "oklch(95% 0.02 311)"
+        ]
+      },
+      "rail": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.04 310)",
+          "oklch(25% 0.04 310)",
+          "oklch(35% 0.04 310)",
+          "oklch(45% 0.04 310)",
+          "oklch(55% 0.04 310)",
+          "oklch(65% 0.04 310)",
+          "oklch(80% 0.04 310)",
+          "oklch(95% 0.04 310)"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.015 316)",
+          "oklch(25% 0.015 316)",
+          "oklch(35% 0.015 316)",
+          "oklch(45% 0.015 316)",
+          "oklch(55% 0.015 316)",
+          "oklch(65% 0.015 316)",
+          "oklch(80% 0.015 316)",
+          "oklch(95% 0.015 316)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.028 310)",
+          "oklch(25% 0.028 310)",
+          "oklch(35% 0.028 310)",
+          "oklch(45% 0.028 310)",
+          "oklch(55% 0.028 310)",
+          "oklch(65% 0.028 310)",
+          "oklch(80% 0.028 310)",
+          "oklch(95% 0.028 310)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "tonalRamp": [
+          "oklch(15% 0.065 310)",
+          "oklch(25% 0.065 310)",
+          "oklch(35% 0.065 310)",
+          "oklch(45% 0.065 310)",
+          "oklch(55% 0.065 310)",
+          "oklch(65% 0.065 310)",
+          "oklch(80% 0.065 310)",
+          "oklch(95% 0.065 310)"
+        ]
+      },
+      "success": {
+        "role": "secondary",
+        "tonalRamp": [
+          "oklch(15% 0.065 160)",
+          "oklch(25% 0.065 160)",
+          "oklch(35% 0.065 160)",
+          "oklch(45% 0.065 160)",
+          "oklch(55% 0.065 160)",
+          "oklch(65% 0.065 160)",
+          "oklch(80% 0.065 160)",
+          "oklch(95% 0.065 160)"
+        ]
+      },
+      "changed": {
+        "role": "secondary",
+        "tonalRamp": [
+          "oklch(15% 0.085 83)",
+          "oklch(25% 0.085 83)",
+          "oklch(35% 0.085 83)",
+          "oklch(45% 0.085 83)",
+          "oklch(55% 0.085 83)",
+          "oklch(65% 0.085 83)",
+          "oklch(80% 0.085 83)",
+          "oklch(95% 0.085 83)"
+        ]
+      },
+      "danger": {
+        "role": "secondary",
+        "tonalRamp": [
+          "oklch(15% 0.09 22)",
+          "oklch(25% 0.09 22)",
+          "oklch(35% 0.09 22)",
+          "oklch(45% 0.09 22)",
+          "oklch(55% 0.09 22)",
+          "oklch(65% 0.09 22)",
+          "oklch(80% 0.09 22)",
+          "oklch(95% 0.09 22)"
+        ]
+      }
+    },
+    "shadows": [],
+    "motion": [],
+    "breakpoints": [
+      {
+        "name": "navigation-row",
+        "value": "48rem"
+      },
+      {
+        "name": "stacked-entry-container",
+        "value": "40rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The lilac primary action, currently used for owner sign-in.",
+      "html": "<button class=\"ds-button ds-primary\">Sign in</button>",
+      "css": ".ds-button { font: inherit; min-block-size: 2.75rem; padding-block: .65rem; padding-inline: 1rem; border: 1px solid color-mix(in oklch, var(--foreground) 26%, transparent); border-radius: var(--radius, .375rem); background: var(--background); color: var(--foreground); cursor: pointer; } .ds-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; } .ds-button:active { background: var(--selection); } @media (hover: hover) and (pointer: fine) { .ds-button:hover { background: var(--selection); } } .ds-primary { background: var(--accent); color: var(--background); font-weight: 600; border-color: transparent; } .ds-primary:active { background: color-mix(in oklch, var(--accent), var(--foreground) 20%); } @media (hover: hover) and (pointer: fine) { .ds-primary:hover { background: color-mix(in oklch, var(--accent), var(--foreground) 12%); } }"
+    },
+    {
+      "name": "Secondary button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Bounded secondary actions such as Search, Next and Try again.",
+      "html": "<button class=\"ds-button\">Search</button>",
+      "css": ".ds-button { font: inherit; min-block-size: 2.75rem; padding-block: .65rem; padding-inline: 1rem; border: 1px solid color-mix(in oklch, var(--foreground) 26%, transparent); border-radius: var(--radius, .375rem); background: var(--background); color: var(--foreground); cursor: pointer; } .ds-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; } .ds-button:active { background: var(--selection); } @media (hover: hover) and (pointer: fine) { .ds-button:hover { background: var(--selection); } }"
+    },
+    {
+      "name": "Labelled input",
+      "kind": "input",
+      "description": "A visible label and dark, outlined search field.",
+      "html": "<label class=\"ds-field\">Title search<input class=\"ds-input\" placeholder=\"Search by title…\" type=\"search\"></label>",
+      "css": ".ds-field { display: grid; gap: .5rem; font: .875rem/1.5 ui-sans-serif, system-ui, sans-serif; color: var(--muted); } .ds-input { font: 1rem/1.5 ui-sans-serif, system-ui, sans-serif; color: var(--foreground); background: var(--background); border: 1px solid color-mix(in oklch, var(--foreground) 26%, transparent); border-radius: var(--radius, .375rem); padding-block: .65rem; padding-inline: 1rem; min-block-size: 2.75rem; caret-color: var(--accent); } .ds-input::placeholder { color: var(--muted); } .ds-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }"
+    },
+    {
+      "name": "Content-type navigation",
+      "kind": "nav",
+      "description": "Plum rail with clear selected-item semantics.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Content types\"><a href=\"#posts\" aria-current=\"page\">Posts</a><a href=\"#projects\">Projects</a></nav>",
+      "css": ".ds-nav { display: grid; gap: .5rem; padding: 1rem; background: var(--rail); font: 1rem/1.5 ui-sans-serif, system-ui, sans-serif; } .ds-nav a { color: var(--muted); text-decoration: none; border-radius: var(--radius, .375rem); padding-block: .75rem; padding-inline: .875rem; } .ds-nav a[aria-current] { color: var(--foreground); background: var(--selection, color-mix(in oklch, var(--accent) 17%, var(--rail))); font-weight: 600; } .ds-nav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; } .ds-nav a:active { background: var(--selection); } @media (hover: hover) and (pointer: fine) { .ds-nav a:hover { background: var(--selection); } }"
+    },
+    {
+      "name": "Title-first entry row",
+      "kind": "custom",
+      "description": "Open, full-title entry row with explicit state and quiet UTC date.",
+      "html": "<article class=\"ds-entry\"><h2>A smaller web, built with intention</h2><p>Published with draft changes</p><time datetime=\"2026-10-14T12:00:00.000Z\">Oct 14, 2026</time></article>",
+      "css": ".ds-entry { display: grid; gap: .5rem; padding-block: 1.5rem; border-block-end: 1px solid color-mix(in oklch, var(--foreground) 13%, transparent); color: var(--foreground); font: 1rem/1.5 ui-sans-serif, system-ui, sans-serif; } .ds-entry h2 { margin: 0; font-size: 1.3125rem; line-height: 1.45; font-weight: 500; overflow-wrap: anywhere; } .ds-entry p { margin: 0; color: var(--changed); font-size: .875rem; } .ds-entry time { color: var(--muted); font-size: .875rem; font-variant-numeric: tabular-nums; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Gallery Index",
+    "overview": "A quiet, dark-only workspace where authored titles lead and interface furniture stays secondary. Aubergine and plum create distinct working regions; lilac selection makes navigation unmistakable without glow or ornamental effects.",
+    "keyCharacteristics": [
+      "Title-first hierarchy with generous row spacing.",
+      "Chromatic dark surfaces rather than neutral charcoal.",
+      "Explicit publication-state text, reinforced by color.",
+      "Familiar controls with visible keyboard focus."
+    ],
+    "rules": [
+      {
+        "name": "The Words Before Color Rule",
+        "body": "Every publication state remains understandable without color.",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "Do preserve dark-only surfaces, readable text, and the plum navigation field.",
+      "Do keep titles complete and publication states explicit.",
+      "Do use familiar controls and visible focus, hover, pressed, and disabled states."
+    ],
+    "donts": [
+      "Don't substitute neon accents, glow, or analytics tiles for the content workspace.",
+      "Don't nest entry rows inside decorative cards.",
+      "Don't expose dead actions for features that are not implemented."
+    ]
+  }
+}

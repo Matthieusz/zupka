@@ -1,0 +1,164 @@
+{
+  "title": "Zupka · dark-only workspace",
+  "question": "Choose the direction for the owner’s content workspace. These are visual studies with illustrative entries, not live CMS data.",
+  "options": [
+    {
+      "id": "field-atlas",
+      "kind": "assigned",
+      "label": "Field Atlas",
+      "lineage": "Field atlases and indexed plates",
+      "thesis": "A forest-dark workspace where draft and public versions are easy to distinguish.",
+      "palette": ["#101d1b", "#19362f", "#e2e8db", "#d8b978"],
+      "materials": ["Deep green navigation", "Open, aligned rows", "Small paired version markers"],
+      "viewport": "Content-type sidebar, Posts heading and search above a generous entry table; version markers explain each publication state.",
+      "risk": "The version markers must reinforce plain-language states, never become a code to learn.",
+      "html": ".impeccable/mocks/decision/field-atlas.html",
+      "raised": [
+        {
+          "from": "Concourse board",
+          "raise": "Preserve strict title/state/date alignment even with long titles."
+        },
+        {
+          "from": "Character catalogue",
+          "raise": "Make selection unmistakable without relying on hover."
+        },
+        {
+          "from": "Reference setting",
+          "raise": "Separate primary titles from supporting slugs through a disciplined type hierarchy."
+        },
+        {
+          "from": "Garden guide",
+          "raise": "Give navigation a committed field of colour, not scattered accents."
+        },
+        {
+          "from": "Star atlas",
+          "raise": "Make version markers secondary to the entry title, with a consistent visual vocabulary."
+        }
+      ]
+    },
+    {
+      "id": "gallery-index",
+      "kind": "pick",
+      "kicker": "IMPECCABLE’S PICK",
+      "label": "Gallery Index",
+      "lineage": "Contemporary exhibition catalogues",
+      "thesis": "A plum-dark, title-led workspace that gives writing room to breathe.",
+      "palette": ["#1e1922", "#302339", "#eee5ef", "#c6b3da"],
+      "materials": ["Aubergine navigation", "Workhorse sans typography", "Spacious text rows"],
+      "viewport": "A restrained sidebar and title-first list; search and status filters stay close to the entries, with textual states beside each title.",
+      "risk": "Familiar and effective; less distinctive than the atlas, and fewer entries fit on screen.",
+      "html": ".impeccable/mocks/decision/gallery-index.html"
+    },
+    {
+      "id": "publication-board",
+      "kind": "challenger",
+      "catalogId": "vernacular-ephemera-boarding-pass-and-gate-board",
+      "verdict": "competitive",
+      "label": "Publication Board",
+      "lineage": "Gate-board information hierarchy, without airport decoration",
+      "thesis": "A dense, blue-black entry table with persistent amber emphasis for unpublished changes.",
+      "palette": ["#101923", "#1a2d40", "#ecf0f5", "#e3b86a"],
+      "materials": ["Blue-black shell", "Tabular dates", "Quiet amber state fields"],
+      "viewport": "Top content-type navigation, compact search and filters, then an aligned title/state/updated table; draft changes remain visibly marked.",
+      "case": "Competitive on product clarity: exceptionally scannable states; weaker audience identification because a writing space can feel operational.",
+      "risk": "Could feel like monitoring software rather than a place for authored content.",
+      "html": ".impeccable/mocks/decision/publication-board.html",
+      "board": "https://impeccable.style/worlds/cards/vernacular-ephemera-boarding-pass-and-gate-board.webp",
+      "hero": "https://impeccable.style/worlds/cards/vernacular-ephemera-boarding-pass-and-gate-board-hero.webp"
+    },
+    {
+      "id": "concourse",
+      "kind": "challenger",
+      "catalogId": "signals-instruments-split-flap-concourse",
+      "label": "Concourse Board",
+      "lineage": "Fixed-column information boards",
+      "palette": ["#16191b", "#ecece6", "#cfa456"],
+      "thesis": "A compact table borrowing disciplined columns, not letter-flip theatre.",
+      "case": "Less suited to authored work and less explicit about draft/public versions than Field Atlas.",
+      "risk": "Rigid density can crowd long titles.",
+      "kept": "Strict column alignment.",
+      "materials": ["Dark-only translation", "Standard web controls"],
+      "viewport": "Content-type navigation and a filtered entry list, without literal source-world controls.",
+      "verdict": "declined"
+    },
+    {
+      "id": "character",
+      "kind": "challenger",
+      "catalogId": "pop-culture-shelf-character-goods-catalog",
+      "label": "Character Catalogue",
+      "lineage": "Character-goods catalogues",
+      "palette": ["#201c2b", "#cbbce0", "#ead2bb"],
+      "thesis": "A dark roster with strongly selected entry cells.",
+      "case": "Portrait-led identification fits neither arbitrary custom content types nor text-only entries; clarity and audience fit both fall below Field Atlas.",
+      "risk": "Entry portraits would imply imagery that may not exist.",
+      "kept": "Unmistakable selection.",
+      "materials": ["Dark-only translation", "Standard web controls"],
+      "viewport": "Content-type navigation and a filtered entry list, without literal source-world controls.",
+      "verdict": "declined"
+    },
+    {
+      "id": "reference",
+      "kind": "challenger",
+      "catalogId": "rw-centre-rail-reference-setting",
+      "label": "Reference Edition",
+      "lineage": "Annotated reference editions",
+      "palette": ["#201d1b", "#e3d9c7", "#db9686"],
+      "thesis": "A dark reading-first list with fine typographic hierarchy.",
+      "case": "Its reading apparatus is less natural for entry management and makes publication states harder to scan than Field Atlas.",
+      "risk": "Book-like density and small apparatus can weaken accessibility.",
+      "kept": "Disciplined title/supporting-text hierarchy.",
+      "materials": ["Dark-only translation", "Standard web controls"],
+      "viewport": "Content-type navigation and a filtered entry list, without literal source-world controls.",
+      "verdict": "declined"
+    },
+    {
+      "id": "garden",
+      "kind": "challenger",
+      "catalogId": "aww2-zoo-gardens-guide-map",
+      "label": "Garden Guide",
+      "lineage": "Colour-zoned guide maps",
+      "palette": ["#14271f", "#b4cf98", "#dfbb72"],
+      "thesis": "A dark colour-zoned workspace using standard list controls.",
+      "case": "Large colour areas identify places better than authored entries; both audience fit and state clarity are weaker than Field Atlas.",
+      "risk": "Colourful zones can distract from entry titles.",
+      "kept": "Colour commitment across the navigation region.",
+      "materials": ["Dark-only translation", "Standard web controls"],
+      "viewport": "Content-type navigation and a filtered entry list, without literal source-world controls.",
+      "verdict": "declined"
+    },
+    {
+      "id": "star",
+      "kind": "challenger",
+      "catalogId": "notation-diagram-systems-star-atlas",
+      "label": "Star Atlas",
+      "lineage": "Celestial chart notation",
+      "palette": ["#111d31", "#e2e6ed", "#dfac78"],
+      "thesis": "A navy list with ranked markers and subtle version rings.",
+      "case": "Spatial magnitude has no truthful entry equivalent; a standard list with secondary markers is clearer and closer to the owner's work.",
+      "risk": "Decorative plotting would suggest a nonexistent relationship between entries.",
+      "kept": "Consistent, subordinate version markers.",
+      "materials": ["Dark-only translation", "Standard web controls"],
+      "viewport": "Content-type navigation and a filtered entry list, without literal source-world controls.",
+      "verdict": "declined"
+    }
+  ],
+  "reroll": {
+    "registers": ["safer", "bolder"]
+  },
+  "buildPath": {
+    "value": "code",
+    "toggle": false
+  },
+  "canon": true,
+  "canonCard": {
+    "kind": "canon",
+    "label": "Familiar dark admin",
+    "thesis": "The category standard: neutral charcoal, a compact sidebar, conventional table and blue selection.",
+    "palette": ["#181a1e", "#23262d", "#edf0f5", "#9cbcf4"],
+    "materials": ["Neutral surfaces", "Standard sans", "Conventional borders"],
+    "viewport": "Content-type sidebar, search and status filters, title/state/date table, pagination.",
+    "risk": "Deliberately familiar rather than recognisably Zupka.",
+    "html": ".impeccable/mocks/decision/canon.html"
+  },
+  "steer": true
+}

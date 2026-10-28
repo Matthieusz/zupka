@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Zupka — field-atlas visual study</title>
+    <style>
+      :root {
+        --bg: oklch(22% 0.022 169);
+        --rail: oklch(29% 0.043 166);
+        --fg: oklch(93% 0.016 115);
+        --muted: oklch(75% 0.025 148);
+        --accent: oklch(80% 0.09 85);
+        --success: oklch(78% 0.075 157);
+      }
+      * {
+        box-sizing: border-box;
+        min-inline-size: 0;
+      }
+      :root {
+        color-scheme: dark;
+        font-synthesis: none;
+        --gutter: clamp(1.5rem, 1rem + 2vw, 3rem);
+      }
+      body {
+        margin: 0;
+        inline-size: 1440px;
+        block-size: 900px;
+        overflow: clip;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          18px/1.5 ui-sans-serif,
+          system-ui,
+          sans-serif;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+        color: inherit;
+      }
+      button,
+      a {
+        touch-action: manipulation;
+      }
+      button {
+        cursor: pointer;
+      }
+      button,
+      input,
+      select {
+        border: 1px solid color-mix(in oklch, var(--fg) 22%, transparent);
+        background: transparent;
+        border-radius: 6px;
+        padding-block: 10px;
+        padding-inline: 16px;
+      }
+      input {
+        inline-size: 350px;
+        caret-color: var(--accent);
+      }
+      input::placeholder {
+        color: var(--muted);
+      }
+      button:active,
+      a:active {
+        background: color-mix(in oklch, var(--accent) 20%, var(--bg));
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 4px;
+      }
+      ::selection {
+        background: var(--accent);
+        color: var(--bg);
+      }
+      .shell {
+        display: flex;
+        block-size: 100%;
+      }
+      .rail {
+        flex: 0 0 242px;
+        padding-inline: 24px;
+        padding-block: 32px;
+        display: flex;
+        flex-direction: column;
+        background: var(--rail);
+        border-inline-end: 1px solid color-mix(in oklch, var(--fg) 10%, transparent);
+      }
+      .brand {
+        font-size: 26px;
+        font-weight: 650;
+        letter-spacing: -0.025em;
+      }
+      .rail nav {
+        display: grid;
+        gap: 8px;
+        margin-block-start: 64px;
+      }
+      .rail nav a {
+        padding-inline: 14px;
+        padding-block: 12px;
+        border-radius: 6px;
+        color: var(--muted);
+      }
+      .rail nav .current {
+        color: var(--fg);
+        background: color-mix(in oklch, var(--accent) 17%, var(--rail));
+        font-weight: 600;
+      }
+      .account {
+        margin-block-start: auto;
+        display: grid;
+        gap: 16px;
+        color: var(--muted);
+      }
+      .account button {
+        justify-self: start;
+      }
+      .content {
+        flex: 1;
+        padding-inline: var(--gutter);
+        padding-block: 32px;
+      }
+      .context {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 16px;
+        padding-block-end: 24px;
+        border-block-end: 1px solid color-mix(in oklch, var(--fg) 13%, transparent);
+      }
+      .heading {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-block-start: 36px;
+        margin-block-end: 28px;
+      }
+      .heading h1 {
+        margin: 0;
+        font-size: 36px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+      .heading .primary {
+        margin-inline-start: auto;
+        background: var(--accent);
+        color: var(--bg);
+        border-color: transparent;
+        font-weight: 600;
+      }
+      .heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+      }
+      .tools {
+        display: flex;
+        align-items: end;
+        gap: 16px;
+        margin-block-end: 28px;
+      }
+      .tools label {
+        display: grid;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      .tools select {
+        min-inline-size: 215px;
+        color: var(--fg);
+      }
+      .tools button {
+        margin-inline-start: auto;
+      }
+      .entries {
+        inline-size: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+      .entries th {
+        text-align: start;
+        color: var(--muted);
+        font-size: 15px;
+        font-weight: 500;
+        padding-block: 12px;
+        border-block-end: 1px solid color-mix(in oklch, var(--fg) 22%, transparent);
+      }
+      .entries th:first-child {
+        inline-size: 49%;
+      }
+      .entries th:nth-child(2) {
+        inline-size: 33%;
+      }
+      .entries td {
+        padding-block: 21px;
+        padding-inline-end: 20px;
+        border-block-end: 1px solid color-mix(in oklch, var(--fg) 12%, transparent);
+        vertical-align: middle;
+      }
+      .entry-title {
+        display: block;
+        font-weight: 550;
+        line-height: 1.4;
+        overflow-wrap: break-word;
+      }
+      .slug {
+        display: block;
+        font-size: 14px;
+        color: var(--muted);
+        margin-block-start: 5px;
+      }
+      .status {
+        font-size: 15px;
+        color: var(--muted);
+        display: inline-flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .status i {
+        inline-size: 9px;
+        block-size: 9px;
+        flex: none;
+        border: 1px solid currentColor;
+        border-radius: 50%;
+      }
+      .published {
+        color: var(--success);
+      }
+      .published i {
+        background: currentColor;
+      }
+      .changed {
+        color: var(--accent);
+      }
+      .changed i {
+        outline: 1px solid currentColor;
+        outline-offset: 3px;
+      }
+      .date {
+        font-size: 15px;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .pagination {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-block-start: 24px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      .pagination span {
+        margin-inline-end: auto;
+      }
+      .pagination button {
+        font-size: 15px;
+      }
+      .pagination button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .study {
+        font-size: 13px;
+        color: var(--muted);
+        margin-block-start: 24px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        gap: 48px;
+        background: var(--rail);
+        padding-inline: 40px;
+        padding-block: 20px;
+      }
+      .topbar nav {
+        display: flex;
+        gap: 12px;
+      }
+      .topbar nav a {
+        padding-inline: 18px;
+        padding-block: 10px;
+        border-radius: 5px;
+        color: var(--muted);
+      }
+      .topbar nav .current {
+        background: color-mix(in oklch, var(--accent) 16%, var(--rail));
+        color: var(--fg);
+      }
+      .topbar button {
+        margin-inline-start: auto;
+      }
+      .publication-board .shell {
+        display: block;
+      }
+      .publication-board .content {
+        padding-inline: 64px;
+        padding-block: 24px;
+      }
+      .publication-board .heading {
+        margin-block-start: 8px;
+      }
+      .publication-board .entries td {
+        padding-block: 16px;
+      }
+      .publication-board .changed {
+        padding-inline: 12px;
+        padding-block: 6px;
+        background: color-mix(in oklch, var(--accent) 12%, var(--bg));
+        border-radius: 4px;
+      }
+      .publication-board .context {
+        display: none;
+      }
+      .gallery-index .entries th:first-child {
+        inline-size: 55%;
+      }
+      .gallery-index .entries td {
+        padding-block: 24px;
+      }
+      .gallery-index .entry-title {
+        font-size: 21px;
+        font-weight: 500;
+      }
+      .gallery-index .slug {
+        display: none;
+      }
+      .gallery-index .status i {
+        display: none;
+      }
+      .gallery-index .content {
+        padding-inline: 56px;
+      }
+      .gallery-index .heading {
+        margin-block-start: 32px;
+        margin-block-end: 36px;
+      }
+      .gallery-index .entries tr:last-child {
+        display: none;
+      }
+      .gallery-index h1 {
+        font-size: 42px;
+      }
+      .canon .entries td {
+        padding-block: 17px;
+      }
+      .canon .entry-title {
+        font-size: 17px;
+      }
+      .canon .status {
+        font-size: 14px;
+      }
+      .canon .status i {
+        display: none;
+      }
+      .canon .status {
+        padding-inline: 10px;
+        padding-block: 4px;
+        border-radius: 5px;
+        background: color-mix(in oklch, currentColor 9%, var(--bg));
+      }
+      @media (hover: hover) and (pointer: fine) {
+        button:hover,
+        a:hover {
+          background: color-mix(in oklch, var(--accent) 12%, var(--bg));
+        }
+        .primary:hover {
+          background: color-mix(in oklch, var(--accent), var(--fg) 12%);
+        }
+      }
+    </style>
+  </head>
+  <body class="field-atlas">
+    <div class="shell">
+      <aside class="rail">
+        <a class="brand" href="#home">Zupka</a>
+        <nav aria-label="Content types">
+          <a class="current" href="#posts" aria-current="page">Posts</a
+          ><a href="#projects">Projects</a><a href="#notes">Notes</a>
+        </nav>
+        <div class="account">
+          <span>Owner workspace</span><button type="button">Sign out</button>
+        </div>
+      </aside>
+      <main class="content">
+        <div class="context"><span>Content</span><span>Owner workspace</span></div>
+        <header class="heading">
+          <div>
+            <h1>Posts</h1>
+            <p>Writing, notes, and things worth sharing.</p>
+          </div>
+          <button class="primary" type="button">New entry</button>
+        </header>
+        <form class="tools">
+          <label>Title search<input placeholder="Search posts…" type="search" /></label
+          ><label
+            >Publication state<select>
+              <option>All states</option>
+              <option>Unpublished</option>
+              <option>Published</option>
+              <option>Published with draft changes</option>
+            </select></label
+          ><button type="button">Search</button>
+        </form>
+        <table class="entries">
+          <thead>
+            <tr>
+              <th scope="col">Title</th>
+              <th scope="col">Publication state</th>
+              <th scope="col">Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <a class="entry-title" href="#entry">A smaller web, built with intention</a
+                ><span class="slug">/a-smaller-web</span>
+              </td>
+              <td>
+                <span class="status changed"
+                  ><i aria-hidden="true"></i>Published · Draft changes</span
+                >
+              </td>
+              <td class="date">14 Oct 2026</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="entry-title" href="#entry">What I learned building a personal site</a
+                ><span class="slug">/building-a-personal-site</span>
+              </td>
+              <td>
+                <span class="status published"><i aria-hidden="true"></i>Published</span>
+              </td>
+              <td class="date">12 Oct 2026</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="entry-title" href="#entry">Notes on keeping software simple</a
+                ><span class="slug">/keeping-software-simple</span>
+              </td>
+              <td>
+                <span class="status draft"><i aria-hidden="true"></i>Unpublished</span>
+              </td>
+              <td class="date">10 Oct 2026</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="entry-title" href="#entry">Designing for the space between screens</a
+                ><span class="slug">/between-screens</span>
+              </td>
+              <td>
+                <span class="status published"><i aria-hidden="true"></i>Published</span>
+              </td>
+              <td class="date">08 Oct 2026</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="entry-title" href="#entry">An autumn reading list</a
+                ><span class="slug">/autumn-reading-list</span>
+              </td>
+              <td>
+                <span class="status draft"><i aria-hidden="true"></i>Unpublished</span>
+              </td>
+              <td class="date">06 Oct 2026</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="entry-title" href="#entry"
+                  >Making room for long titles without losing the shape of a useful interface</a
+                ><span class="slug">/long-titles</span>
+              </td>
+              <td>
+                <span class="status changed"
+                  ><i aria-hidden="true"></i>Published · Draft changes</span
+                >
+              </td>
+              <td class="date">03 Oct 2026</td>
+            </tr>
+          </tbody>
+        </table>
+        <footer class="pagination">
+          <span>1–6 of 18 entries</span><button type="button" disabled>Previous</button
+          ><button type="button">Next</button>
+        </footer>
+        <p class="study">
+          Visual study · Illustrative content · Controls are not connected to the CMS
+        </p>
+      </main>
+    </div>
+  </body>
+</html>
