@@ -1,0 +1,16 @@
+.git
+**/node_modules
+**/dist
+**/.vite
+**/coverage
+**/.impeccable
+**/*.sqlite*
+**/*.db*
+**/uploads
+**/.env
+**/.env.*
+!**/.env.example
+backups
+data
+**/test-results
+**/__pycache__

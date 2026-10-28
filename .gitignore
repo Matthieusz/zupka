@@ -2,6 +2,17 @@ node_modules/
 dist/
 .vite/
 coverage/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 .env
 .env.*
 !.env.example
+/apps/api/uploads/
+/data/
+/backups/
+/test-results/
+**/__pycache__/
+
+# Local UI captures and browser verification; never commit private content screenshots.
+/apps/web/.impeccable/review/
